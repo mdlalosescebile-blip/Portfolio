@@ -1,0 +1,1022 @@
+---
+title: "analysing south africa inflation data"
+author: "Scebile Mdlalose"
+date: "2026-10-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#importing dataset
+southafrica_hub <- read.csv('sa-data-hub_inflation-cpi_2026-10-02.csv' , comment.char =  '#')
+View(southafrica_hub)
+```
+#Inspect row/column dimensions
+
+```{r}
+#Inspect row/column dimensions
+nrow(southafrica_hub)
+ncol(southafrica_hub)
+dim(southafrica_hub)
+```
+#data types
+
+```{r}
+#data types
+head(southafrica_hub)
+str(southafrica_hub)
+names(southafrica_hub)
+class(southafrica_hub)
+```
+#zero missing value
+
+```{r}
+#zero missing value
+colSums(is.na(southafrica_hub))
+sum(is.na(southafrica_hub))
+```
+#loading package
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+##summary statistics 
+```{r}
+#summary statistics 
+cpi_headline <- southafrica_hub %>% filter(id == 'cpi-headline')
+Mean_cpi <- mean(cpi_headline$value ,  na.rm = TRUE)
+std_cpi <- sd(cpi_headline$value , na.rm =  TRUE)
+Max_cpi <- max(cpi_headline$value , na.rm = TRUE)
+min_cpi <- min(cpi_headline$value , na.rm = TRUE)
+median_cpi <- median(cpi_headline$value , na.rm = TRUE)
+
+food_inflation <- southafrica_hub %>% filter(id == 'food-inflation')
+Mean_food <- mean(food_inflation$value ,  na.rm = TRUE)
+std_food <- sd(food_inflation$value , na.rm =  TRUE)
+Max_food <- max(food_inflation$value , na.rm = TRUE)
+min_food <- min(food_inflation$value , na.rm = TRUE)
+median_food <- median(food_inflation$value , na.rm = TRUE)
+
+repo_rate <- southafrica_hub %>%filter(id == "repo-rate")
+mean_repo <- mean(repo_rate$value, na.rm = TRUE)
+std_repo <- sd(repo_rate$value, na.rm = TRUE)
+Max_repo <- max(repo_rate$value, na.rm = TRUE)
+min_repo <- min(repo_rate$value, na.rm = TRUE)
+median_repo <- median(repo_rate$value, na.rm = TRUE)
+
+annual_cpi <- southafrica_hub %>%
+  filter(id == 'annual-cpi-avg')
+Mean_annual <- mean(annual_cpi$value , na.rm = TRUE)
+std_annal <- sd(annual_cpi$value , na.rm = TRUE)
+max_annual <- max(annual_cpi$value , na.rm =  TRUE)
+min_annual <- min(annual_cpi$value , na.rm =  TRUE)
+median_annual <- median(annual_cpi$value , na.rm = TRUE)
+```
+# distribution of HEADLINE CPI
+```{r}
+#HEADLINE CPI HISTOGRAM
+cpi_headline <- southafrica_hub%>%
+  filter(id== 'cpi-headline')
+ggplot(cpi_headline , aes(x = value)) + geom_histogram(bins =  8 , fill ='skyblue' , color ='black' )+
+  labs(title = 'Distrubution Of Headline CPI' , x = 'HEADLINE CPI %' , y = 'frequency') + theme_bw()
+View(cpi_headline)
+```
+## Description
+The histogram shows how frequently different Headline CPI inflation rates appeared in South Africa's dataset. The X-axis represents Headline CPI inflation rates in percentages (%), while the Y-axis represents frequency, meaning how many times each inflation range appeared.
+### Technical Interpretation
+The graph shows that:
+- Headline CPI inflation rates ranged from approximately 2.8% to 4.0%.
+- Inflation rates around 3.1% to 3.4% appeared most frequently, with each of the two bars reaching a frequency of 3 times.
+- Inflation rates around 2.9% to 3.0% appeared 2 times.
+- Inflation rates around 3.4% to 3.5% also appeared 2 times.
+- The lowest inflation rate, around 2.8%, appeared once.
+- The highest inflation rate, around 4.0%, also appeared once.
+
+- This graph shows that south Africa  Headline CPI inflation   was mostly concentrated between 2.8 and 3.5 , the most frequency  range was around 3.3
+### Business Interpretation
+The graph shows that consumer prices in South Africa were  increasing , not  too fast  and not too slowly
+
+For businesses, this means that the cost of goods and services was increasing, which could affect operating expenses and product prices.
+
+For consumers, this means that everyday goods and services were becoming more expensive, which could reduce their purchasing power.
+
+# Overall Conclusion
+The histogram shows that South Africa's Headline CPI inflation rates were mostly concentrated between 3.0% and 3.5%,
+#distribution of food inflation
+```{r}
+#FOOD INFLATION  HISTOGRAM
+food_inflation <- southafrica_hub%>%
+  filter(id =='food-inflation')
+ggplot(food_inflation , aes(x = value)) + geom_histogram(bins =8 , fill ='orange' , color ='black')+
+  labs(title =  ' Distribution of Food Inflation' , x = 'Food Inflation%' , y ='frequency') + theme_bw()
+```
+## Description
+The histogram shows how frequently different food inflation rates appeared in South Africa's dataset. The X-axis represents food inflation rates in percentages (%), while the Y-axis represents frequency, meaning how many times each inflation range appeared in the dataset.
+### Technical Interpretation
+The graph shows that:
+- Food inflation rates ranged from approximately 2.1% to 3.8%.
+- Food inflation rates around 3.0% to 3.1% appeared most frequently, with a frequency of 4 times.
+- Food inflation rates around 2.8% to 2.9% appeared 2 times.
+- Food inflation rates around 3.2% to 3.4% appeared 2 times.
+- Food inflation rates around 3.7% to 3.8% appeared 2 times.
+- The lowest food inflation rate, around 2.1%, appeared only once.
+
+This shows that most food inflation rates were concentrated around 3.0%
+### Business Interpretation
+The graph shows that food prices in South Africa were generally increasing, but the rate of increase was not always the same.
+
+For consumers, this means that food was becoming more expensive, which could affect household budgets and reduce the amount of money available for other needs.
+
+For businesses, especially supermarkets and food retailers, increasing food prices could affect purchasing costs, selling prices and customer spending.
+# Overall Conclusion
+The histogram shows that South Africa's food inflation rates were mostly concentrated around 3.0% to 3.4%, with the highest frequency of 4 occurring around 3.0% to 3.1%.
+This indicates that food prices were generally increasing at a moderate rate, although the inflation rate varied across the dataset.
+
+However, the histogram does not show whether food inflation increased or decreased over time because it only shows how frequently different inflation rates appeared.
+
+#distribution of REPO RATE
+```{r}
+#REPO RATE HISTOGRAM
+repo_rate <- southafrica_hub%>%
+  filter(id =='repo-rate')
+ggplot(repo_rate , aes(x = value)) + geom_histogram(bins =8 , fill ='darkgreen' , color ='black')+
+  labs(title =  ' Distribution of Repo Rate' , x = 'Repo Rate%' , y ='frequency') + theme_bw()
+```
+## Description
+The histogram shows how frequently different Repo Rates appeared in South Africa's dataset. The X-axis represents the Repo Rate in percentages (%), while the Y-axis represents frequency, meaning how many times each Repo Rate range appeared in the dataset.
+### Technical Interpretation
+The graph shows that:
+- The Repo Rate ranged from approximately 6.75% to 8.25%.
+- The highest Repo Rate range, around 8.1% to 8.25%, appeared most frequently, with a frequency of 8 times.
+- The lowest Repo Rate range, around 6.75% to 6.9%, appeared 3 times.
+- Repo Rates around 7.1% to 7.2% appeared 2 times.
+- Repo Rates around 7.75% to 7.9% also appeared 2 times.
+- Other Repo Rate ranges appeared less frequently, mostly once.
+### Business Interpretation
+The graph shows that South Africa's Repo Rate was frequently at higher levels during the period covered by the dataset.
+
+A higher Repo Rate generally means borrowing money becomes more expensive because banks may charge higher interest rates on loans.
+
+For businesses, this could increase the cost of borrowing money to expand operations, purchase equipment or finance projects.
+
+For consumers, higher interest rates could make home loans, car loans and other credit repayments more expensive, leaving less money for everyday spending.
+# Overall Conclusion
+The histogram shows that South Africa's Repo Rate was most frequently between 8.1% and 8.25%, appearing 8 times, while lower Repo Rates appeared less frequently.
+
+However, the histogram does not show whether the Repo Rate increased or decreased over time because it only shows how frequently different Repo Rates appeared.
+
+#BIVARIATE ANALYSIS(distribution of headline CPI and food inflation)
+```{r}
+#Fix date and sort
+southafrica_hub$period_date <- as.Date(paste0("01 ", southafrica_hub$period), format="%d %b %Y")
+southafrica_hub <- southafrica_hub[order(southafrica_hub$period_date),]
+
+# Filter - use SAME capital letters Hb
+cpi_food <- southafrica_hub %>% filter(id %in% c("cpi-headline", "food-inflation"))
+# Plot
+ggplot(cpi_food, aes(x = period_date, y = value, colour = id, group = id)) +
+  geom_line(linewidth = 1) +
+  geom_point() +
+  labs(title = "Headline CPI vs Food Inflation", x = "Month", y = "Inflation (%)", colour = "Indicator") +
+  scale_x_date(date_labels = "%b %Y", date_breaks = "1 month") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + theme_bw()
+
+```
+## Description
+Time series graph shows how Headline CPI and Food Inflation changed over time in South Africa, from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents inflation rates in percentages (%). The red line represents Headline CPI, and the blue line represents Food Inflation
+
+This graph show that headline cpi and food inflation  they move to the same direction  to sometimes not the  entire  period 
+### Technical Interpretation
+The graph shows that:
+- In May 2025, Headline CPI was approximately 2.8%, while Food Inflation was 2.2%.
+- From May to September 2025, both inflation rates generally increased. Headline CPI reached 3.5%, while Food Inflation reached approximately 3.3%.
+- In November 2025, both inflation rates were approximately 3.0%, showing that they were increasing at the same annual rate.
+- In January 2026, both inflation rates reached approximately 3.5%.
+- In February and March 2026, Food Inflation was higher than Headline CPI, reaching approximately 3.7% in February.
+- In April 2026, Headline CPI increased sharply to 4.0%, while Food Inflation decreased to approximately 2.9%.
+This graph show that headline cpi and food inflation  they move to the same direction  to sometimes not the  entire  period 
+
+### Business Interpretation
+The graph shows the relationship between overall consumer price increases and food price increases in South Africa.
+
+When Food Inflation increases faster than Headline CPI, food prices are rising faster than overall consumer prices. This could put more pressure on household budgets because food is an essential expense.
+
+For businesses, especially food retailers, changes in food inflation could affect purchasing costs, selling prices and customer spending.
+
+The sharp increase in Headline CPI in April 2026, while Food Inflation decreased, suggests that other goods and services may have contributed more to overall inflation during that month.
+
+# Overall Conclusion
+The graph shows that Headline CPI and Food Inflation generally followed similar patterns during some months, but their movements were not always the same.
+
+Food Inflation was higher than Headline CPI in February and March 2026, while Headline CPI became significantly higher in April 2026.
+
+This indicates that food prices contribute to overall inflation, but changes in Headline CPI are not explained by food prices alone.
+
+
+# steep-line graph
+```{r}
+repo_rate <- repo_rate %>%
+  mutate(
+    period_date = as.Date(
+      paste0("01 ", period),
+      format = "%d %b %Y"
+    )
+  )
+
+
+repo_plot <- ggplot(
+  repo_rate,
+  aes(x = period_date, y = value)
+) +
+  geom_step(
+    color = "darkgreen",
+    linewidth = 1
+  ) +
+  geom_point(
+    color = "darkgreen",
+    size = 2
+  ) +
+  labs(
+    title = "Repo Rate",
+    x = "Date",
+    y = "Repo Rate (%)"
+  ) +
+  theme_bw() + theme(
+    axis.text.x = element_text( angle = 45, hjust = 1, size = 8 ))
+
+
+repo_plot
+```
+## Description
+The step-line graph shows how South Africa's Repo Rate changed over time, from 2023 to 2026.
+
+The X-axis represents the dates, while the Y-axis represents the Repo Rate in percentages (%).
+
+The green step-line shows when the Repo Rate remained unchanged and when it decreased.
+### Technical Interpretation
+The graph shows that:
+- From 2023 to around September 2024, the Repo Rate remained stable at approximately 8.25%.
+- Towards the end of 2024, the Repo Rate decreased from 8.25% to approximately 8.0%.
+- During 2025, the Repo Rate continued to decrease in steps, moving through approximately 7.75%, 7.5%, 7.25% and 7.0%.
+- Towards the end of 2025, the Repo Rate decreased further to approximately 6.75%.
+- In early 2026, the Repo Rate remained stable at approximately 6.75%.
+This shows a clear downward trend in the Repo Rate, with periods where the rate remained unchanged before decreasing again.
+### Business Interpretation
+The graph shows that the South African Reserve Bank reduced the Repo Rate over the period covered by the dataset.
+
+A lower Repo Rate generally makes borrowing money less expensive because banks may reduce the interest rates charged on loans.
+
+For businesses, lower interest rates could make it easier to borrow money to purchase equipment, expand operations and invest in new projects.
+
+For consumers, lower interest rates could reduce repayments on certain loans, leaving more money available for everyday spending.
+
+However, lower interest rates do not automatically mean that prices of goods and services will decrease.
+# Overall Conclusion
+The graph shows that South Africa's Repo Rate decreased from approximately 8.25% to 6.75% between 2023 and early 2026.
+
+This represents a total decrease of 1.5 percentage points.
+
+The downward movement indicates that monetary policy became less restrictive during the period analysed, potentially reducing borrowing costs for businesses and consumers
+
+
+#MULTIVARIATE ALIGNMENT(time series)
+```{r}
+# Prepare Headline CPI data
+headline_monthly <- southafrica_hub %>%
+  filter(id == "cpi-headline") %>%
+  select(period_date, headline_cpi = value)
+
+# Prepare Food Inflation data
+food_monthly <- southafrica_hub %>%
+  filter(id == "food-inflation") %>%
+  select(period_date, food_cpi = value)
+
+# Prepare Repo Rate data
+repo_updates <- southafrica_hub %>%
+  filter(id == "repo-rate") %>%
+  select(period_date, repo_rate = value) %>%
+  arrange(period_date)
+
+# Find the common period for CPI and Food Inflation
+start_date <- max(
+  min(headline_monthly$period_date, na.rm = TRUE),
+  min(food_monthly$period_date, na.rm = TRUE)
+)
+
+end_date <- min(
+  max(headline_monthly$period_date, na.rm = TRUE),
+  max(food_monthly$period_date, na.rm = TRUE)
+)
+
+# Create monthly dates
+monthly_dates <- data.frame(
+  period_date = seq(
+    from = start_date,
+    to = end_date,
+    by = "month"
+  )
+)
+
+# Combine the three indicators
+aligned_12months <- monthly_dates %>%
+  left_join(headline_monthly, by = "period_date") %>%
+  left_join(food_monthly, by = "period_date")
+
+# Forward-fill the Repo Rate
+repo_filled <- bind_rows(
+  repo_updates,
+  data.frame(
+    period_date = monthly_dates$period_date,
+    repo_rate = NA_real_
+  )
+) %>%
+  arrange(period_date) %>%
+  fill(repo_rate, .direction = "down") %>%
+  filter(period_date %in% monthly_dates$period_date) %>%
+  distinct(period_date, .keep_all = TRUE)
+
+# Add Repo Rate to monthly data
+aligned_12months <- aligned_12months %>%
+  left_join(repo_filled, by = "period_date") %>%
+  arrange(period_date)
+
+# View combined data
+
+
+# Convert data to long format for plotting
+aligned_long <- aligned_12months %>%
+  pivot_longer(
+    cols = c(headline_cpi, food_cpi, repo_rate),
+    names_to = "Indicator",
+    values_to = "Rate"
+  )
+
+# Create Multivariate Alignment Graph
+multivariate_plot <- ggplot(
+  aligned_long,
+  aes(x = period_date, y = Rate,
+      colour = Indicator, group = Indicator)
+) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  labs(
+    title = "Multivariate Alignment",
+    x = "Month",
+    y = "Rate (%)",
+    colour = "Indicator"
+  ) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(
+      angle = 45,
+      hjust = 1
+    )
+  )
+multivariate_plot
+```
+## Description
+Time Series  graph shows how three economic indicators changed over the same period, from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the rates in percentages (%).
+
+The purpose of this graph is to compare the three indicators over the same period and understand how inflation and interest rates  relate to each other.
+### Technical Interpretation
+The graph shows that:
+- In May 2025, Headline CPI was approximately 2.8%, Food Inflation was 2.2%, and the Repo Rate was 7.25%.
+- From May to September 2025, Headline CPI and Food Inflation generally increased, while the Repo Rate remained around 7.25% before decreasing.
+- In November 2025, Headline CPI and Food Inflation were both approximately 3.0%, while the Repo Rate was around 6.75%.
+- In January 2026, Headline CPI and Food Inflation both reached approximately 3.5%.
+- In February and March 2026, Food Inflation was higher than Headline CPI, reaching approximately 3.7% in February.
+- In April 2026, Headline CPI increased to 4.0%, while Food Inflation decreased to approximately 2.9%.
+- The Repo Rate gradually decreased from approximately 7.25% to 6.75%, then remained stable.
+This shows that Headline CPI and Food Inflation fluctuated, while the Repo Rate generally decreased before becoming stable.
+### Business Interpretation
+The graph shows how changes in inflation and interest rates could affect businesses and consumers in South Africa.
+
+When Headline CPI and Food Inflation increase, consumers may need to spend more money on goods and services. This can reduce their purchasing power.
+
+For businesses, increasing inflation could lead to higher operating costs, especially for food retailers and businesses that purchase goods regularly.
+
+The decreasing Repo Rate could make borrowing money less expensive, which may encourage businesses to invest and consumers to spend.
+
+However, even though the Repo Rate decreased, inflation continued to fluctuate. This suggests that lower interest rates do not always result in an immediate decrease in inflation.
+
+###Relationship Between Repo Rate and Inflation
+The graph shows that the Repo Rate generally decreased from approximately 7.25% to 6.75%, while Headline CPI and Food Inflation continued to increase and decrease during different months.
+
+For example, between May and September 2025, inflation generally increased while the Repo Rate remained stable for much of that period.
+
+In early 2026, the Repo Rate remained around 6.75%, but Headline CPI and Food Inflation continued to fluctuate.
+
+Relationship Conclusion: The Repo Rate and inflation are related because interest rates are used to help control inflation. However, the graph shows that inflation did not always decrease when the Repo Rate decreased. This suggests that changes in interest rates may take time to affect inflation.
+# Overall Conclusion
+The multivariate alignment graph shows that Headline CPI, Food Inflation and the Repo Rate followed different patterns between May 2025 and April 2026.
+
+Headline CPI and Food Inflation sometimes increased or decreased together, while the Repo Rate generally decreased and later remained stable.
+
+The graph helps us understand that inflation and interest rates are connected, but they do not always move in the same direction.
+
+
+
+#ADVANCED ANALYSIS & FEATURE ENGINEERING
+```{r}
+#FORWARD-FILL IMPUTATION
+southafrica_df <- aligned_12months %>%
+  arrange(period_date)
+#FOOD INFLATION SPREAD
+#Food Inflation minus Headline CPI
+southafrica_df <- southafrica_df %>%
+  mutate(
+    food_spread = food_cpi - headline_cpi
+  )
+#  REAL POLICY RATE
+# Repo Rate minus Headline CPI
+
+southafrica_df <- southafrica_df %>%
+  mutate(
+    real_policy_rate = repo_rate - headline_cpi
+  )
+```
+#BENCHMARKING
+```{r}
+#BENCHMARKING
+southafrica_df <- southafrica_df %>%
+  mutate(
+    inflation_status = case_when(
+      headline_cpi < 3.0 ~ "Below Target",
+      headline_cpi <= 6.0 ~ "Within Target",
+      headline_cpi > 6.0 ~ "Above Target"
+    ),
+    midpoint_difference = headline_cpi - 4.5
+  )
+
+# Display the completed Phase 3 dataset
+View(southafrica_df)
+
+# Display results in Console
+print(southafrica_df)
+
+
+```
+
+#FOOD INFLATION SPREAD
+```{r}
+#FOOD INFLATION SPREAD
+food_spread_plot <- ggplot(
+  southafrica_df,
+  aes(x = period_date, y = food_spread)
+) +
+  geom_col(fill = "orange") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Food Inflation Spread",
+    x = "Month",
+    y = "Food Inflation Spread (Percentage Points)"
+  ) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+food_spread_plot
+```
+## Description
+The bar chart shows the difference between Food Inflation and Headline CPI in South Africa from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the Food Inflation Spread in percentage points.
+The Food Inflation Spread is calculated as:
+
+Food Inflation Spread = Food Inflation − Headline CPI
+- A positive spread means Food Inflation is higher than Headline CPI.
+- A negative spread means Food Inflation is lower than Headline CPI.
+- A zero spread means both inflation rates are equal.
+
+### Technical Interpretation
+The graph shows that:
+- In May 2025, the Food Inflation Spread was approximately −0.6 percentage points, meaning Food Inflation was lower than Headline CPI.
+- From June to August 2025, the spread remained around −0.3 percentage points, showing that Food Inflation was slightly lower than Headline CPI.
+- In September and October 2025, the negative spread became smaller, moving closer to zero.
+- In November 2025, the spread reached 0, meaning Food Inflation and Headline CPI were equal.
+- In December 2025, the spread became slightly negative again, at approximately −0.1 percentage points.
+- In February 2026, the spread increased to approximately +0.7 percentage points, showing that Food Inflation was higher than Headline CPI.
+- In March 2026, the spread remained positive at approximately +0.5 percentage points.
+- In April 2026, the spread decreased sharply to approximately −1.1 percentage points, meaning Food Inflation was much lower than Headline CPI.
+This shows that Food Inflation was lower than Headline CPI in most months, except February and March 2026.
+
+### Business Interpretation
+The graph shows whether food prices were increasing faster or slower than overall consumer prices in South Africa.
+
+When the spread is positive, food prices are increasing faster than overall consumer prices. This could put more pressure on household budgets because consumers need to spend more money on food.
+
+When the spread is negative, food prices are increasing more slowly than overall consumer prices. This does not mean food prices are decreasing; it means they are increasing at a slower rate.
+
+For businesses, especially supermarkets and food retailers, a positive spread could indicate greater pressure from rising food prices, potentially affecting purchasing costs and selling prices.
+
+
+###Relationship Between Food Inflation and Headline CPI
+The graph shows that Food Inflation and Headline CPI are related, but their rates of increase are not always equal.
+
+From May 2025 to January 2026, Food Inflation was mostly lower than Headline CPI, meaning overall consumer prices were generally increasing faster than food prices.
+
+In February and March 2026, Food Inflation became higher than Headline CPI, showing that food prices were increasing faster than overall consumer prices.
+
+However, in April 2026, the spread became strongly negative, meaning Headline CPI was increasing much faster than Food Inflation.
+
+Relationship Conclusion: Food Inflation and Headline CPI are connected because food is part of the overall consumer price index. However, the difference between them changes over time because other goods and services also affect Headline CPI.
+# Overall Conclusion
+The Food Inflation Spread graph shows that Food Inflation was generally lower than Headline CPI during most of the period analysed.
+
+Food Inflation increased faster than Headline CPI in February and March 2026, but this changed in April 2026 when the spread dropped to approximately −1.1 percentage points.
+
+This indicates that food price increases were not always the main reason for changes in overall inflation. Other goods and services also contributed to changes in Headline CPI.
+
+The main finding is that food prices and overall consumer prices were increasing at different rates throughout the period analysed
+
+#repo rate time series
+```{r}
+#REPO RATE
+real_policy_plot <- ggplot(
+  southafrica_df,
+  aes(x = period_date, y = real_policy_rate)
+) +
+  geom_line(color = "darkgreen", linewidth = 1) +
+  geom_point(color = "darkgreen", size = 2) +
+  labs(
+    title = "REPO RATE",
+    x = "Month",
+    y = "Real Policy Rate (%)"
+  ) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+real_policy_plot
+```
+## Description
+The line graph shows how South Africa's Real Policy Rate changed from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the Real Policy Rate in percentages (%).
+
+The Real Policy Rate is calculated as:
+
+Real Policy Rate = Repo Rate − Headline CPI
+
+The purpose of this graph is to show the difference between the Repo Rate and Headline CPI inflation over time.
+
+### Technical Interpretation
+The graph shows that:
+- In May 2025, the Real Policy Rate was approximately 4.45%, which was the highest point on the graph.
+- From June to September 2025, the Real Policy Rate generally decreased from approximately 4.05% to 3.5%.
+- In October and November 2025, the rate increased slightly, reaching approximately 3.75% in November.
+- From December 2025 to January 2026, the rate decreased to approximately 3.25%.
+- In February 2026, the Real Policy Rate increased to approximately 3.75%.
+- In March 2026, it decreased slightly to approximately 3.65%.
+- In April 2026, the Real Policy Rate decreased sharply to approximately 2.75%, the lowest point on the graph.
+This shows that the Real Policy Rate generally decreased over the period, although there were some increases in certain months.
+
+### Business Interpretation
+The graph shows how the Repo Rate compares with inflation in South Africa.
+
+When the Real Policy Rate is higher, borrowing can be more expensive relative to inflation, which may discourage businesses and consumers from taking loans.
+
+When the Real Policy Rate decreases, borrowing costs become lower relative to inflation, which may encourage businesses to invest and consumers to spend.
+
+For businesses, the decrease in the Real Policy Rate could make borrowing more attractive, depending on the interest rates charged by banks.
+
+For consumers, a lower Real Policy Rate could help reduce the pressure associated with borrowing costs, although actual loan repayments depend on the interest rates they pay.
+
+###Relationship Between Repo Rate and Headline CPI
+The graph shows that the Real Policy Rate depends on both the Repo Rate and Headline CPI.
+
+When the Repo Rate decreases while Headline CPI remains stable, the Real Policy Rate decreases.
+
+When Headline CPI increases while the Repo Rate remains unchanged, the Real Policy Rate also decreases.
+
+For example, in April 2026, Headline CPI increased to approximately 4.0%, while the Repo Rate was around 6.75%. This resulted in a Real Policy Rate of approximately 2.75%.
+
+Relationship Conclusion: The Repo Rate and Headline CPI work together to determine the Real Policy Rate. A decrease in the Repo Rate or an increase in Headline CPI can reduce the Real Policy Rate.
+
+# Overall Conclusion
+The graph shows that South Africa's Real Policy Rate generally decreased from approximately 4.45% in May 2025 to 2.75% in April 2026.
+
+This indicates that the difference between the Repo Rate and Headline CPI became smaller during the period analysed.
+
+The Real Policy Rate remained positive throughout the period, meaning the Repo Rate was consistently higher than Headline CPI inflation.
+
+The main finding is that the Real Policy Rate generally decreased, suggesting that monetary policy became less restrictive in inflation-adjusted terms during the period analysed.
+
+
+#HEADLINE CPI TARGET BENCHMARKING
+```{r}
+#Headline CPI vs SARB Target
+target_plot <- ggplot(
+  southafrica_df,
+  aes(x = period_date, y = headline_cpi)
+) +
+  annotate(
+    "rect",
+    xmin = min(southafrica_df$period_date),
+    xmax = max(southafrica_df$period_date),
+    ymin = 3.0,
+    ymax = 6.0,
+    fill = "lightgreen",
+    alpha = 0.2
+  ) +
+  geom_line(color = "blue", linewidth = 1) +
+  geom_point(color = "blue", size = 2) +
+  geom_hline(
+    yintercept = 3.0,
+    linetype = "dashed",
+    color = "red"
+  ) +
+  geom_hline(
+    yintercept = 6.0,
+    linetype = "dashed",
+    color = "red"
+  ) +
+  geom_hline(
+    yintercept = 4.5,
+    linetype = "dotted",
+    color = "darkgreen"
+  ) +
+  labs(
+    title = "Headline CPI vs Target Inflation Band",
+    x = "Month",
+    y = "Headline CPI (%)"
+  ) +
+  scale_x_date(
+    date_labels = "%b %Y",
+    date_breaks = "1 month"
+  ) +
+  scale_y_continuous(limits = c(2, 7)) +
+  theme_bw() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+target_plot
+  
+```
+## Description
+The line graph shows how South Africa's Headline CPI inflation changed from May 2025 to April 2026 compared with the inflation target band used in the project.
+
+The X-axis represents the months, while the Y-axis represents Headline CPI inflation rates in percentages (%).
+
+The graph contains:
+- Blue line: Actual Headline CPI inflation rate.
+- Lower red dashed line (3%): Lower inflation target.
+- Upper red dashed line (6%): Upper inflation target.
+- Green dotted line (4.5%): Midpoint of the target band.
+- Light green shaded area: The target range between 3% and 6%.
+The purpose of this graph is to determine whether Headline CPI inflation remained within the target range during the period analysed.
+### Technical Interpretation
+The graph shows that:
+- In May 2025, Headline CPI was approximately 2.8%, which was below the lower target of 3%.
+- From June to September 2025, inflation increased gradually from approximately 3.2% to 3.5%, remaining within the target band.
+- In October and November 2025, inflation decreased, reaching approximately 3.0% in November.
+- In January 2026, inflation increased to approximately 3.5%.
+- In February and March 2026, inflation was around 3.0% to 3.1%, remaining close to the lower target.
+- In April 2026, inflation increased to 4.0%, the highest rate recorded in this period, but still below the 4.5% midpoint.
+This shows that Headline CPI remained within the project's 3%–6% target band for 11 out of 12 months, with May 2025 being the only month below the lower target.
+
+### Business Interpretation
+The graph shows that South Africa's Headline CPI inflation was generally within the target range used in the project.
+
+For consumers, inflation within this range means that prices were still increasing, but at relatively moderate annual rates.
+
+For businesses, more stable inflation can make it easier to plan budgets, estimate operating costs and set product prices.
+
+For policymakers, the graph provides evidence that inflation remained within the target band for most of the period. However, the increase to 4.0% in April 2026 shows why monitoring changes in inflation is important.
+
+
+##Relationship Between Headline CPI and the Inflation Target Band
+The graph compares actual Headline CPI inflation with the lower target of 3%, the upper target of 6%, and the midpoint of 4.5%.
+
+From June 2025 to April 2026, Headline CPI remained within the target range.
+
+In May 2025, inflation was approximately 2.8%, slightly below the lower target.
+
+Throughout the period, Headline CPI remained below the 4.5% midpoint and never reached the upper target of 6%.
+
+Relationship Conclusion: Headline CPI was generally within the project's inflation target band, although it remained closer to the lower target than the upper target. This shows that inflation was relatively moderate during the period analysed.
+#   Overall Conclusion
+The graph shows that South Africa's Headline CPI inflation generally remained between 3.0% and 4.0% from May 2025 to April 2026, except for May 2025, when it was approximately 2.8%.
+
+Inflation remained within the project's target band for 11 out of 12 months, and it never exceeded the upper target of 6%.
+
+The main finding is that Headline CPI inflation was generally within the benchmark range used in the project, although prices continued to increase and inflation varied from month to month.
+
+
+#Headline CPI vs Food Inflation
+```{r}
+southafrica_df <- aligned_12months %>%
+  select(period_date, headline_cpi, food_cpi) %>%
+  pivot_longer(
+    cols = c(headline_cpi, food_cpi),
+    names_to = "indicator",
+    values_to = "inflation_rate"
+  )
+
+# Create a professional line graph
+ggplot(southafrica_df,
+       aes(x = period_date,
+           y = inflation_rate,
+           color = indicator)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(
+    title = "Headline CPI vs Food Inflation",
+    subtitle = "Comparison of inflation rates over time",
+    x = "Month",
+    y = "Inflation Rate (%)",
+    color = "Indicator"
+  ) +
+  theme_minimal()
+
+```
+
+## Description
+The line graph compares South Africa's Headline CPI and Food Inflation from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the inflation rate in percentages (%).
+
+The blue line represents Headline CPI, while the red line represents Food Inflation.
+
+The purpose of this graph is to show how overall consumer price inflation and food inflation changed over time and to compare their trends.
+
+### Technical Interpretation
+The graph shows that Headline CPI and Food Inflation changed throughout the 12-month period.
+
+- Headline CPI started at 2.8% in May 2025 and increased to 3.5% in September 2025. It then decreased to 3.0% in November 2025 before increasing again to 3.5% in January 2026. It dropped to 3.0% in February 2026 and reached its highest value of 4.0% in April 2026.
+
+- Food Inflation started at 2.2% in May 2025 and increased to 3.3% in September 2025. It decreased to 3.0% in November 2025 before increasing to approximately 3.7% in February 2026. It then decreased to 2.9% in April 2026.
+
+- Relationship: Both inflation rates generally followed similar patterns during much of 2025. In November 2025 and January 2026, both inflation rates were equal at 3.0% and 3.5%, respectively. However, in February and March 2026, Food Inflation was higher than Headline CPI.
+
+- Major difference: In April 2026, Headline CPI reached 4.0%, while Food Inflation dropped to 2.9%, creating a difference of 1.1 percentage points.
+### Business Interpretation
+
+The graph shows that food prices and overall consumer prices were increasing at different rates during certain months.
+
+When Food Inflation was higher than Headline CPI, particularly in February and March 2026, households experienced faster increases in food prices compared with overall consumer prices. This could put more pressure on household budgets.
+
+Businesses involved in food production and retail could also face challenges when food inflation increases, as higher prices may affect customer spending and business planning.
+
+In April 2026, Food Inflation decreased while Headline CPI increased. This suggests that other goods and services, apart from food, may have contributed more to overall inflation during that month.
+
+The findings can help businesses and policymakers understand changes in the cost of living and make better financial decisions.
+##Overall Conclusion
+The graph shows that Headline CPI and Food Inflation both increased and decreased during the study period, although they did not always follow the same pattern.
+
+Headline CPI increased from 2.8% in May 2025 to 4.0% in April 2026, while Food Inflation increased from 2.2% to 2.9% over the same period.
+
+Food Inflation was higher than Headline CPI in February and March 2026, but Headline CPI was higher in April 2026.
+
+Overall, the analysis shows that food inflation and headline inflation are related but do not always change at the same rate. Understanding these changes can help businesses, households and policymakers make informed decisions about spending, budgeting and economic planning.
+
+
+#REPO RATE
+```{r}
+#REPO RATE
+ggplot(aligned_12months,
+       aes(x = period_date,
+           y = repo_rate)) +
+  geom_step(
+    color = "steelblue",
+    linewidth = 1.2
+  ) +
+  geom_point(
+    color = "steelblue",
+    size = 2
+  ) +
+  labs(
+    title = "Repo Rate Over Time",
+    subtitle = "Policy interest rate during the study period",
+    x = "Month",
+    y = "Repo Rate (%)"
+  ) +
+  theme_minimal()
+
+```
+## Description
+The step-line graph shows how South Africa's Repo Rate changed over a 12-month period, from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the Repo Rate expressed as a percentage (%).
+
+The purpose of this graph is to show how interest rates changed over time and identify periods when the South African Reserve Bank (SARB) reduced or maintained the Repo Rate.
+### Technical Interpretation
+
+The graph shows that the Repo Rate decreased during the study period.
+- May to August 2025: The Repo Rate remained stable at 7.25%, showing no changes during these months.
+- September to October 2025: The Repo Rate decreased from 7.25% to 7.00%, representing a reduction of 0.25 percentage points.
+- November 2025 to April 2026: The Repo Rate decreased again from 7.00% to 6.75% and remained stable at that level until April 2026.
+Overall, the Repo Rate decreased from 7.25% to 6.75%, representing a total reduction of 0.50 percentage points.
+
+The step-line graph shows that the Repo Rate did not decrease continuously every month. Instead, it remained unchanged for certain periods before decreasing.
+### Business Interpretation
+The decrease in the Repo Rate suggests that monetary policy became less restrictive during the study period.
+
+When the Repo Rate decreases, commercial banks may reduce their lending interest rates, making borrowing less expensive for households and businesses.
+
+For businesses, lower borrowing costs can make it easier to obtain loans, expand operations and invest in new projects.
+
+For households, lower interest rates may reduce repayments on certain variable-rate loans, leaving more money available for other expenses.
+
+However, lower interest rates do not automatically mean that inflation will decrease. Lower borrowing costs can encourage spending, which may increase demand for goods and services.
+
+The SARB must therefore consider inflation trends when making interest rate decisions.
+# Overall Conclusion
+The graph shows that South Africa's Repo Rate followed a downward trend from May 2025 to April 2026.
+
+The Repo Rate decreased from 7.25% to 6.75%, with two reductions of 0.25 percentage points during the study period.
+
+This indicates that interest rates became lower, potentially reducing borrowing costs for businesses and households.
+
+Overall, the analysis shows that the Repo Rate was gradually reduced rather than changing every month. These changes may support borrowing, spending and investment, but their actual effects on inflation and economic activity require further analysis.
+
+Understanding these changes helps businesses, households and policymakers make informed financial and economic decisions.
+
+
+
+#Headline CPI vs SARB Target
+```{r}
+#Headline CPI vs SARB Target
+ggplot(aligned_12months,
+       aes(x = period_date,
+           y = headline_cpi)) +
+  annotate(
+    "rect",
+    xmin = -Inf, xmax = Inf,
+    ymin = 3, ymax = 6,
+    fill = "lightgreen",
+    alpha = 0.3
+  ) +
+  geom_hline(
+    yintercept = 4.5,
+    linetype = "dashed",
+    color = "red"
+  ) +
+  geom_line(
+    color = "blue",
+    linewidth = 1.2
+  ) +
+  geom_point(
+    color = "blue",
+    size = 2
+  ) +
+  labs(
+    title = "Headline CPI vs SARB Inflation Target",
+    subtitle = "Comparison with the 3%–6% benchmark",
+    x = "Month",
+    y = "Headline Inflation (%)"
+  ) +
+  theme_minimal()
+
+```
+## Description
+The line graph compares South Africa's Headline CPI with the 3%–6% inflation target benchmark specified in the project brief, from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents Headline CPI expressed as a percentage (%).
+
+The blue line represents Headline CPI, the green shaded area represents the 3%–6% inflation target range, and the red dashed line represents the 4.5% midpoint.
+
+The purpose of this graph is to determine whether Headline CPI remained within the target range during the study period.
+
+### Technical Interpretation
+The graph shows that Headline CPI changed throughout the 12-month period.
+- May 2025: Headline CPI started at 2.8%, which was below the lower benchmark of 3%.
+- June to September 2025: Headline CPI increased from approximately 3.2% to 3.5%, remaining within the target range.
+- October to November 2025: Headline CPI decreased from approximately 3.3% to 3.0%, reaching the lower boundary of the target range.
+- December 2025 to January 2026: Headline CPI increased again, reaching 3.5% in January.
+- February to March 2026: Headline CPI decreased to 3.0% in February before increasing slightly to 3.1% in March.
+- April 2026: Headline CPI reached its highest value of 4.0%, remaining below the 4.5% midpoint.
+Overall, Headline CPI remained within the 3%–6% benchmark for 11 out of 12 months. Only May 2025 was below the target range, and none of the months exceeded the upper benchmark of 6%.
+### Business Interpretation
+The graph shows that overall consumer price inflation remained relatively low during the study period.
+
+When inflation stays within the target range, businesses and households may find it easier to plan their spending and budgets because prices are increasing at a more manageable rate.
+
+For businesses, relatively stable inflation can help with financial planning, setting prices and managing operating costs.
+
+For households, lower inflation means prices are generally increasing more slowly, although this does not necessarily mean that goods and services are becoming cheaper.
+
+The increase in Headline CPI to 4.0% in April 2026 shows that inflationary pressure increased towards the end of the study period.
+
+This information can help policymakers monitor inflation trends and assess whether economic conditions are consistent with their policy objectives.
+# Overall Conclusion
+The graph shows that South Africa's Headline CPI remained within the 3%–6% benchmark during most of the study period.
+
+Headline CPI increased from 2.8% in May 2025 to 4.0% in April 2026, while remaining below the 4.5% midpoint throughout the period.
+
+Although inflation increased towards the end of the study period, it did not exceed the upper benchmark of 6%.
+
+Overall, the analysis indicates that inflation remained within the project's target range for most months, but the increase in April 2026 highlights the importance of continuing to monitor consumer price changes.
+
+These findings can help businesses, households and policymakers understand inflation trends and make informed economic decisions.
+
+
+
+
+
+#Food Inflation Spread
+```{r}
+#Food Inflation Spread
+ggplot(southafrica_df,
+       aes(x = period_date,
+           y = food_spread)) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed"
+  ) +
+  geom_line(
+    color = "darkgreen",
+    linewidth = 1.2
+  ) +
+  geom_point(
+    color = "darkgreen",
+    size = 2
+  ) +
+  labs(
+    title = "Food Inflation Spread Over Time",
+    subtitle = "Difference between food and headline inflation",
+    x = "Month",
+    y = "Inflation Difference (Percentage Points)"
+  ) +
+  theme_minimal() 
+
+```
+## Description
+The line graph shows the difference between Food Inflation and Headline CPI in South Africa from May 2025 to April 2026.
+
+The X-axis represents the months, while the Y-axis represents the inflation difference measured in percentage points.
+
+The green line represents the Food Inflation Spread, while the dashed horizontal line at zero shows when Food Inflation and Headline CPI are equal.
+
+The purpose of this graph is to identify periods when food prices were increasing faster or slower than overall consumer prices.
+### Technical Interpretation
+The graph shows that the Food Inflation Spread changed throughout the 12-month period.
+- May 2025: The spread started at -0.6 percentage points, indicating that Food Inflation was lower than Headline CPI.
+- June to August 2025: The spread increased to -0.3 percentage points and remained stable, showing that Food Inflation was still lower than Headline CPI.
+- September to October 2025: The spread increased from approximately -0.2 to -0.1 percentage points, showing that the difference between the two inflation rates was becoming smaller.
+- November 2025: The spread reached 0.0 percentage points, meaning Food Inflation and Headline CPI were equal.
+- December 2025: The spread decreased slightly to -0.1 percentage points, indicating that Food Inflation was slightly lower than Headline CPI.
+- January 2026: The spread returned to 0.0 percentage points, showing that both inflation rates were equal again.
+- February 2026: The spread increased to its highest value of 0.7 percentage points, meaning Food Inflation was higher than Headline CPI.
+- March 2026: The spread decreased slightly to 0.5 percentage points but remained positive, indicating that Food Inflation was still higher than Headline CPI.
+- April 2026: The spread dropped sharply to -1.1 percentage points, its lowest value, showing that Food Inflation was considerably lower than Headline CPI.
+Overall, the graph shows that Food Inflation was mostly lower than Headline CPI, except in February and March 2026, when it was higher.
+### Business Interpretation
+The graph shows that food prices and overall consumer prices were increasing at different rates during the study period.
+
+From May to October 2025, Food Inflation remained lower than Headline CPI. This means that food prices were increasing more slowly than overall consumer prices.
+
+In November 2025 and January 2026, both inflation rates were equal, showing that food prices and overall consumer prices were increasing at the same rate.
+
+In February and March 2026, Food Inflation became higher than Headline CPI. This means food prices were increasing faster than overall consumer prices, which could put additional financial pressure on households because they may need to spend more money on groceries.
+
+In April 2026, the spread decreased sharply to -1.1 percentage points. This indicates that food prices were increasing more slowly than overall consumer prices. However, it does not necessarily mean that food prices were decreasing.
+
+For businesses, especially food retailers and producers, understanding these changes can help with budgeting, pricing and managing costs.
+
+For policymakers, the findings can help identify periods when food inflation is placing greater pressure on household spending.
+# Overall Conclusion
+The graph shows that the difference between Food Inflation and Headline CPI changed over the 12-month period.
+
+Food Inflation was generally lower than Headline CPI during most months. However, in February and March 2026, Food Inflation became higher, indicating that food prices were increasing faster than overall consumer prices.
+
+The highest spread was 0.7 percentage points in February 2026, while the lowest spread was -1.1 percentage points in April 2026.
+
+Overall, the analysis shows that food prices and overall consumer prices do not always increase at the same rate. The changing Food Inflation Spread highlights the importance of monitoring food inflation because it can affect household budgets, business costs and economic planning.
+
+These findings can help businesses, households and policymakers make informed financial decisions.
+
+
+
+
+
+
+
+
+
+
+
